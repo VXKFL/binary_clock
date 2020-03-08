@@ -23,10 +23,10 @@ struct time get_time(void) {
     if(!state) {                                                                    // only start, if there is not already a job running
         state = 1;
         /* configure TWI and send start condition */
-        TWBR = 0x01;
-        TWSR = 0x00;
-        // TWBR = 0x01;																//	\ 400000Hz SCL
-	    // TWSR = (1<<TWPS0);															//	/
+        // TWBR = 0x01;
+        // TWSR = 0x00;
+        TWBR = 0x01;																//	\ 400000Hz SCL
+	    TWSR = (1<<TWPS0);															//	/
 	    TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN) | (1<<TWIE);
     }
 
