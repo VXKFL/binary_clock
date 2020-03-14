@@ -7,12 +7,12 @@
 
 #pragma pack(1)
 
-struct colour {
+typedef struct {
     uint8_t green;
     uint8_t red;
     uint8_t blue;
-};
+} color;
 
-void set_binary_display(struct time);
+void set_binary_display(time);
 
 #endif

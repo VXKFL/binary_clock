@@ -1,8 +1,8 @@
 #include <avr/io.h>
 
-#define PORT _SFR_IO_ADDR(PORTC)
-#define DDR _SFR_IO_ADDR(DDRC)
-#define PIN PINC0
+#define PORT _SFR_IO_ADDR(PORTB)
+#define DDR _SFR_IO_ADDR(DDRB)
+#define PIN PINB0
 
 .text
 .globl sendbyte

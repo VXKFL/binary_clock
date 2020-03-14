@@ -1,8 +1,9 @@
+#include <avr/interrupt.h>
 #include "uart.h"
 
-static volatile struct time new_time;
+static volatile time new_time;
 
-FILE* uart_init(unsigned long baudrate) {
+FILE* uart_init(const uint32_t baudrate) {
     sei();
     static FILE uart_output = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
     // stdout=&uart_output; // für printf
@@ -17,17 +18,6 @@ int uart_putchar(char c, FILE *stream) {
     UDR0 = c;
     return 0;
 }
-
-// struct time* update_time(void) {
-//     if(new_time_available) {
-//         UCSR0B &= ~(1<<RXCIE0);
-//         new_time_available = 0;
-//         new_time = new_time_buf;
-//         UCSR0B |= (1<<RXCIE0);
-//         return &new_time;    
-//     }
-//     return NULL;
-// }
 
 ISR(USART_RX_vect) {
     static uint8_t get_time_state = 0;
@@ -54,7 +44,7 @@ ISR(USART_RX_vect) {
             /*DST Byte ignored*/
             DDRB |= (1<<PIN5);
             PORTB |= (1<<PIN5);
-            set_time(new_time);
+            rtc_set_time(new_time);
             get_time_state = 0xff;
             return;
         default: return;
