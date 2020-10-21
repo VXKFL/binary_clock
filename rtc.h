@@ -13,12 +13,19 @@
 
 #pragma pack(1)
 
-/* Struct storing time*/
+/* Struct storing time */
 typedef struct {
     uint8_t second;
     uint8_t minute;
     uint8_t hour;
 } time;
+
+/* Struct storing date */
+typedef struct {
+    uint8_t day;
+    uint8_t month;
+    uint8_t year;
+} date;
 
 /* Initialize rtc */
 void rtc_init(void);
@@ -27,7 +34,7 @@ void rtc_init(void);
 time rtc_get_time(void);
 
 /* Set time of rtc */
-void rtc_set_time(time);
+void rtc_set_time(time, date);
 
 /* Check if second is updated */
 uint8_t rtc_is_second(void);

@@ -44,7 +44,7 @@ ISR(USART_RX_vect) {
             /*DST Byte ignored*/
             DDRB |= (1<<PIN5);
             PORTB |= (1<<PIN5);
-            rtc_set_time(new_time);
+            rtc_set_time(new_time, (date){0,0,0});
             get_time_state = 0xff;
             return;
         default: return;
