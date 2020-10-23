@@ -1,6 +1,6 @@
 #ifndef SENDBYTE_H
 #define SENDBYTE_H
 
-void sendbyte(unsigned char* ptr, unsigned int cnt);
+void sendbyte(uint8_t* ptr, uint16_t cnt);
 
 #endif
