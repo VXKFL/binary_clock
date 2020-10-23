@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include "rtc.h"
 
-FILE* uart_init(const uint32_t);
+FILE* uart_init(const uint32_t baudrate);
 
-int uart_putchar(char, FILE*);
+int uart_putchar(char c, FILE* stream);
 
 struct time* update_time(void);
 
