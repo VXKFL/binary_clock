@@ -20,21 +20,17 @@ typedef struct {
     uint8_t hour;
 } time;
 
-/* Struct storing date */
-typedef struct {
-    uint8_t day;
-    uint8_t month;
-    uint8_t year;
-} date;
-
 /* Initialize rtc */
 void rtc_init(void);
 
 /* Read time from rtc */
 time rtc_get_time(void);
 
+/* Get dst status */
+uint8_t rtc_get_dst(void);
+
 /* Set time of rtc */
-void rtc_set_time(time, date);
+void rtc_set_time(time, uint8_t dst);
 
 /* Check if second is updated */
 uint8_t rtc_is_second(void);
