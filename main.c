@@ -20,7 +20,7 @@ int main(void) {
 #ifndef DEBUG   
         if(rtc_is_second()) {
             time t = rtc_get_time();
-            fprintf(uart0, "time: %i:%i:%i\r\n", t.hour, t.minute, t.second); 
+            fprintf(uart0, "time: %i:%i:%i, dst: %i\r\n", t.hour, t.minute, t.second, rtc_get_dst()); 
             set_binary_display(t);
         }
 #else

@@ -30,6 +30,10 @@ void set_binary_display(time t) {
         t.second >>= 1;
     }
 
+    for(int i = 0; i < 10; i++) {
+        img_buf[i] = (color){0x10, 0x10, 0x10};
+    }
+
     // img_buf[3] = (color){0x00, 0x00, 0x00};
 
     sendbyte((void*) img_buf, 27 * sizeof(color));

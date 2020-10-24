@@ -15,9 +15,9 @@
 
 /* Struct storing time */
 typedef struct {
-    uint8_t second;
-    uint8_t minute;
-    uint8_t hour;
+    int8_t second;
+    int8_t minute;
+    int8_t hour;
 } time;
 
 /* Initialize rtc */
