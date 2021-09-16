@@ -11,17 +11,18 @@ extern volatile uint8_t debug_count_B;
 #endif
 
 int main(void) {
-    
+   
+    bd_init(); 
     rtc_init();
     FILE* uart0 = uart_init(1000000);
 
     while(1) {
-
+	bd_update_eemem();
 #ifndef DEBUG   
         if(rtc_is_second()) {
             time t = rtc_get_time();
             fprintf(uart0, "time: %i:%i:%i, dst: %i\r\n", t.hour, t.minute, t.second, rtc_get_dst()); 
-            set_binary_display(t);
+	    bd_set_time(t);
         }
 #else
         _delay_ms(20);
