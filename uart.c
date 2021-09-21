@@ -6,7 +6,10 @@
 #define NO_COMMAND 0x80
 #define SET_RECEIVED_TIME 0x81
 #define RECEIVE_TIME 0x82
-#define RECEIVE_AND_SET_COLOR 0x83
+#define RECEIVE_AND_SET_HOUR_COLOR 0x83
+#define RECEIVE_AND_SET_MINUTE_COLOR 0x84 
+#define RECEIVE_AND_SET_SECOND_COLOR 0x85
+#define RECEIVE_AND_SET_BORDER_COLOR 0x86
 
 static volatile union {
 	struct {
@@ -16,12 +19,10 @@ static volatile union {
 	uint8_t byte[sizeof(time) + 1];
 } new_time;
 
-static volatile union {
-	struct {
-		color h, m, s, b;
-	};
-	uint8_t byte[sizeof(color)*4];
-} new_colors;
+color new_color_h;
+color new_color_m;
+color new_color_s;
+color new_color_b;
 
 FILE* uart_init(const uint32_t baudrate) {
 	sei();
@@ -40,7 +41,6 @@ int uart_putchar(char c, FILE *stream) {
 }
 
 ISR(USART_RX_vect) {
-	static uint8_t get_time_state = 0;
 	static uint8_t i = 0;
 	static uint8_t command = NO_COMMAND;
   
@@ -75,14 +75,66 @@ ISR(USART_RX_vect) {
 			command = NO_COMMAND;
 		}
 		break;
-	case RECEIVE_AND_SET_COLOR:
-		if(i < sizeof(new_colors)) {
-			new_colors.byte[i] = (data << 1) + 0x01;
+	case RECEIVE_AND_SET_HOUR_COLOR:
+		if(i < sizeof(color)) {
+			if(data == 0) {
+				*( ( (uint8_t*) &new_color_h ) + i ) = 0; 
+			} else {
+				*( ( (uint8_t*) &new_color_h ) + i ) = (data << 1) + 0x01;
+			}
 			i++;
 		}
-		if(i >= sizeof(new_colors)) {
+		if(i >= sizeof(color)) {
 			// last color byte received
-			bd_set_colors(new_colors.h, new_colors.m, new_colors.s, new_colors.b);
+			bd_set_color_h(new_color_h);
+			i = 0;
+			command = NO_COMMAND;
+		}
+		break;
+	case RECEIVE_AND_SET_MINUTE_COLOR:
+		if(i < sizeof(color)) {
+			if(data == 0) {
+				*( ( (uint8_t*) &new_color_m ) + i ) = 0;
+			} else {
+				*( ( (uint8_t*) &new_color_m ) + i ) = (data << 1) + 0x01;
+			}
+			i++;
+		}
+		if(i >= sizeof(color)) {
+			// last color byte received
+			bd_set_color_m(new_color_m);
+			i = 0;
+			command = NO_COMMAND;
+		}
+		break;
+	case RECEIVE_AND_SET_SECOND_COLOR:
+		if(i < sizeof(color)) {
+			if(data == 0) {
+				*( ( (uint8_t*) &new_color_s ) + i ) = 0;
+			} else {
+				*( ( (uint8_t*) &new_color_s ) + i ) = (data << 1) + 0x01;
+			}
+			i++;
+		}
+		if(i >= sizeof(color)) {
+			// last color byte received
+			bd_set_color_s(new_color_s);
+			i = 0;
+			command = NO_COMMAND;
+		}
+		break;
+	case RECEIVE_AND_SET_BORDER_COLOR:
+		if(i < sizeof(color)) {
+			if(data == 0) {
+				*( ( (uint8_t*) &new_color_b ) + i ) = 0;
+			} else {
+				*( ( (uint8_t*) &new_color_b ) + i ) = (data << 1) + 0x01;
+			}
+			i++;
+		}
+		if(i >= sizeof(color)) {
+			// last color byte received
+			bd_set_color_b(new_color_b);
 			i = 0;
 			command = NO_COMMAND;
 		}

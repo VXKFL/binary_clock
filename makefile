@@ -1,9 +1,9 @@
 TARGET=binaryclock
 
 OUTDIR=build
-CFILES=main.c uart.c rtc.c sendbyte.S binary_display.c
-HFILES=uart.h rtc.h sendbyte.h binary_display.h
-OPTIONS= -O2 -DF_CPU=16000000 # -DDEBUG
+CFILES=main.c uart.c rtc.c sendbyte.S binary_display.c button.c
+HFILES=uart.h rtc.h sendbyte.h binary_display.h button.h
+OPTIONS= -O2 -DF_CPU=16000000 -Wall -Wextra # -DDEBUG
 
 DEVICE=atmega328p
 PROGRAMMER=avrispmkII

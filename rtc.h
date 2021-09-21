@@ -29,6 +29,9 @@ time rtc_get_time(void);
 /* Get dst status */
 uint8_t rtc_get_dst(void);
 
+/* Toggle dst */
+void rtc_toggle_dst(void);
+
 /* Set time of rtc */
 void rtc_set_time(time, uint8_t dst);
 

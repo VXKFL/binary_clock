@@ -49,7 +49,6 @@ volatile static uint8_t flag_get_time = 0;
 volatile static uint8_t is_dst = 0;
 volatile static uint8_t dst_toggled = 0;
 
-volatile static uint8_t button_already_pressed = 0;
 
 /* EEPROM variables */
 // eeprom_is_dst stores if the time value hold by the rtc reflects dst
@@ -74,18 +73,6 @@ void rtc_init(void) {
     EICRA |= (1<<ISC01); EICRA &= ~(1<<ISC00);
     EIMSK |= (1<<INT0);
 
-    /* PCINT4 Config (Button) */
-    MCUCR &= ~(1<<PUD);
-    DDRB &= ~(1<<PIN4);
-    PORTB |= (1<<PIN4);
-    PCICR = (1<<PCIE0);
-    PCMSK0 = (1<<PCINT4);
-
-    /* Timer0 Config (Button cooldown) */
-    TCCR0A = 0;
-    TCCR0B = 0; //(1<<CS02) | (1<<CS00);
-    TIMSK0 = (1<<TOIE0);
-    TCNT0 = 0;
 
     /* TWI Config */
     TWBR = 0x01;																//	\ 400000Hz SCL
@@ -127,12 +114,6 @@ time rtc_get_time(void) {   // inline?
     }
 }
 
-uint8_t rtc_get_dst(void) {
-    return is_dst;
-}
-
-
-
 /* set local and rtc time */
 void rtc_set_time(time t, uint8_t dst) {
     set_raw_second = ((t.second / 10) << 4) | ((t.second % 10) & 0x0f); 
@@ -158,6 +139,17 @@ void rtc_set_time(time t, uint8_t dst) {
     eeprom_write_byte(&eeprom_dst_toggled, 0);
 }
 
+void rtc_toggle_dst(void) {
+        dst_toggled &= 1;
+        dst_toggled ^= 1;
+        eeprom_busy_wait();
+        eeprom_write_byte(&eeprom_dst_toggled, dst_toggled);
+}
+
+uint8_t rtc_get_dst(void) {
+    return is_dst;
+}
+
 ISR(INT0_vect) {
 #ifdef DEBUG    
     debug_count_A++;
@@ -172,26 +164,6 @@ ISR(INT0_vect) {
         TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN) | (1<<TWIE);
     }
     flag_second_tick = 1;
-}
-
-ISR(PCINT0_vect) {
-    if (PINB & (1<<PIN4)) {
-        if (button_already_pressed) return;
-        button_already_pressed = 1;
-
-        dst_toggled &= 1;
-        dst_toggled ^= 1;
-        eeprom_busy_wait();
-        eeprom_write_byte(&eeprom_dst_toggled, dst_toggled);
-        
-        TCNT0 = 0;
-        TCCR0B = (1<<CS02) | (1<<CS00);
-    }
-}
-
-ISR(TIMER0_OVF_vect) {
-    button_already_pressed = 0;
-    TCCR0B = 0; 
 }
 
 ISR(TWI_vect) {
